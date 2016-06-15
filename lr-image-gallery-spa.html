@@ -69,6 +69,40 @@
 				return listItem;
 			}
 
+			function createImageListItem(field) {
+				var listItem = $(document.createElement('li'));
+				var anchor = $(document.createElement('a'));
+
+				anchor.addClass('imageAnchor');
+				anchor.attr('data-fileEntryId', field.fileEntryId);
+
+				var header = $(document.createElement('h2'));
+
+				header.html(field.title);
+
+				anchor.append(header);
+
+				var image = $(document.createElement('img'));
+
+				var link = server + "/documents/" + field.groupId + "/" + field.folderId + "/" + field.fileName;
+
+				image.attr('src', link);
+				image.attr('alt', 'image');
+
+				anchor.append(image);
+
+				var aside = $(document.createElement('p'));
+
+				aside.addClass('ui-li-aside');
+				aside.html(field.folderId);
+
+				anchor.append(aside);
+
+				listItem.append(anchor);
+
+				return listItem;
+			}
+
 			function displayGalleryPage() {
 				$.get(
 					{
@@ -95,6 +129,37 @@
 						);
 
 						subfolders.listview('refresh');
+					}
+				);
+
+				$.get(
+					{
+						type: 'GET',
+						url: server + '/api/jsonws/dlfolder/get-file-entries-and-file-shortcuts',
+						beforeSend: function (xhr) {
+							xhr.setRequestHeader('Authorization', 'Basic ' + btoa(user + ':' + password));
+						}
+					},
+					{
+						groupId: groupId,
+						folderId: folderId,
+						status: 0,
+						start: 0,
+						end: 100
+					},
+					function(data, status) {
+						var images = $('#images');
+
+						images.empty();
+
+						$.each(
+							data,
+							function(i, field) {
+								images.append(createImageListItem(field));
+							}
+						);
+
+						images.listview('refresh');
 					}
 				);
 
@@ -185,6 +250,9 @@
 
 			<div role='main' class='ui-content'>
 				<ul data-inset='true' data-role='listview' id='subfolders'>
+				</ul>
+
+				<ul data-inset='true' data-role='listview' id='images'>
 				</ul>
 			</div>
 
