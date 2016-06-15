@@ -1,0 +1,16 @@
+{
+	"name": "spa-gallery",
+	"version": "1.0.0",
+	"description": "",
+	"dependencies" : {
+		"body-parser"  : "latest",
+		"express" : "latest",
+		"method-override": "latest",
+		"morgan" : "latest"
+	},
+	"main": "server.js",
+	"scripts": {
+	},
+	"author": "",
+	"license": "ISC"
+}
