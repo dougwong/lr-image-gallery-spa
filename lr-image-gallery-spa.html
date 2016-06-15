@@ -49,7 +49,7 @@
 				var anchor = $(document.createElement('a'));
 
 				anchor.addClass('subfolderAnchor');
-				anchor.attr('data-folderId', field.dlFolderId);
+				anchor.attr('data-folderId', field.folderId);
 
 				var header = $(document.createElement('h2'));
 
@@ -85,6 +85,8 @@
 					function(data, status) {
 						var subfolders = $('#subfolders');
 
+						subfolders.empty();
+
 						$.each(
 							data,
 							function(i, field) {
@@ -106,6 +108,16 @@
 						'.groupAnchor',
 						function(event) {
 							groupId = $(event.currentTarget).attr('data-groupId');
+
+							displayGalleryPage();
+						}
+					);
+
+					$('#subfolders').on(
+						'click',
+						'.subfolderAnchor',
+						function(event) {
+							folderId = $(event.currentTarget).attr('data-folderId');
 
 							displayGalleryPage();
 						}
