@@ -17,12 +17,30 @@
 			var password = 'test';
 
 			function createGroupListItemFolder(field) {
-				var listItem = _createGroupList(field.nameCurrentValue, field.friendlyURL);
+				var listItem = _createGroupList(field.nameCurrentValue, field.friendlyURL, 'ui-li-aside');
 
 				return listItem;
 			}
 
-			function _createGroupListItem(headerTitle, content) {
+			function createListItemImage(link, title) {
+				var anchorImage = $(document.createElement('a'));
+
+				anchorImage.addClass('swipebox');
+				anchorImage.attr('href', link);
+				anchorImage.attr('title', title);
+
+				var image = $(document.createElement('img'));
+				image.attr('src', link);
+				image.attr('alt', 'image');
+
+				anchorImage.append(image);
+
+				var listItem = _createGroupListItem(title, anchorImage, 'ui-li-icon');
+
+				return listItem;
+			}
+
+			function _createGroupListItem(headerTitle, content, jqueryMobileCSSClass) {
 				var listItem = $(document.createElement('li'));
 				var anchor = $(document.createElement('a'));
 
@@ -36,7 +54,7 @@
 
 				var aside = $(document.createElement('p'));
 
-				aside.addClass('ui-li-aside');
+				aside.addClass(jqueryMobileCSSClass);
 				aside.html(content);
 
 				anchor.append(aside);
@@ -71,6 +89,16 @@
 					);
 				}
 			);
+
+			function test() {
+				var groups = $('#groups');
+
+				groups.append(createListItemImage("https://github.com/enochchu/stupidfunpictures/raw/master/gif/makeitrain/monopoly.gif","makeitrain"));
+
+				groups.append(createListItemImage("https://raw.githubusercontent.com/enochchu/stupidfunpictures/master/gif/rambo/rambomode.jpg","rambo"));
+
+				groups.append(createListItemImage("https://raw.githubusercontent.com/enochchu/stupidfunpictures/master/gif/disappear/danger5window.gif","makeitrain"));
+			}
 		</script>
 	</head>
 	<body>
