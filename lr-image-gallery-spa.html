@@ -104,6 +104,13 @@
 			}
 
 			function displayGalleryPage() {
+				if (folderId == 0) {
+					$('.back-btn').hide();
+				}
+				else {
+					$('.back-btn').show();
+				}
+
 				$.get(
 					{
 						type: 'GET',
@@ -168,6 +175,32 @@
 
 			$(document).ready(
 				function() {
+					$('#back-btn').on(
+						'click',
+						function() {
+							if (folderId > 0) {
+								$.get(
+									{
+										type: 'GET',
+										url: server + '/api/jsonws/dlfolder/get-folder',
+										beforeSend: function (xhr){
+											xhr.setRequestHeader('Authorization', 'Basic ' + btoa(user + ':' + password));
+										}
+									},
+									{
+										folderId: folderId
+									},
+									function(data, status) {
+										folderId = data.folderId;
+
+										displayGalleryPage();
+									}
+								);
+							}
+
+						}
+					);
+
 					$('#groups').on(
 						'click',
 						'.groupAnchor',
@@ -237,10 +270,6 @@
 				<ul data-inset='true' data-role='listview' id='groups'>
 				</ul>
 			</div>
-
-			<div data-role='footer'>
-				<h4>Footer</h4>
-			</div>
 		</div>
 
 		<div data-role='page' id='gallery-page'>
@@ -254,10 +283,8 @@
 
 				<ul data-inset='true' data-role='listview' id='images'>
 				</ul>
-			</div>
 
-			<div data-role='footer'>
-				<h4>Footer</h4>
+				<button class="ui-btn" id="back-btn">Back</button>
 			</div>
 		</div>
 	</body>
