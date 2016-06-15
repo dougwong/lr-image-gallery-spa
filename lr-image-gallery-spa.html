@@ -16,7 +16,31 @@
 			var user = 'test@liferay.com';
 			var password = 'test';
 
-			function createGroupListItem(field) {
+			function createGroupListItemFolder(field) {
+				var listItem = _createGroupList(field.nameCurrentValue, field.friendlyURL, 'aside');
+
+				return listItem;
+			}
+
+			function createListItemImage(link, title) {
+				var anchorImage = $(document.createElement('a'));
+
+				anchorImage.addClass('swipebox');
+				anchorImage.attr('href', link);
+				anchorImage.attr('title', title);
+
+				var image = $(document.createElement('img'));
+				image.attr('src', link);
+				image.attr('alt', 'image');
+
+				anchorImage.append(image);
+
+				var listItem = _createGroupListItem(title, anchorImage, 'icon');
+
+				return listItem;
+			}
+
+			function _createGroupListItem(headerTitle, content, listType) {
 				var listItem = $(document.createElement('li'));
 				var anchor = $(document.createElement('a'));
 
@@ -24,14 +48,15 @@
 
 				var header = $(document.createElement('h2'));
 
-				header.html(field.nameCurrentValue);
+				header.addClass("header-title-" + listType);
+				header.html(headerTitle);
 
 				anchor.append(header);
 
 				var aside = $(document.createElement('p'));
 
-				aside.addClass('ui-li-aside');
-				aside.html(field.friendlyURL);
+				aside.addClass("ui-li-" + listType);
+				aside.html(content);
 
 				anchor.append(aside);
 
@@ -63,8 +88,32 @@
 							groups.listview('refresh');
 						}
 					);
+
+					$('.swipebox').swipebox({
+						useCSS : true,
+						useSVG : true,
+						initialIndexOnArray : 0,
+						hideCloseButtonOnMobile : false,
+						removeBarsOnMobile : true,
+						hideBarsDelay : 3000,
+						videoMaxWidth : 1140,
+						beforeOpen: function() {},
+						afterOpen: null,
+						afterClose: function() {},
+						loopAtEnd: false
+					});
 				}
 			);
+
+			function test() {
+				var groups = $('#groups');
+
+				groups.append(createListItemImage("https://github.com/enochchu/stupidfunpictures/raw/master/gif/makeitrain/monopoly.gif","makeitrain"));
+
+				groups.append(createListItemImage("https://raw.githubusercontent.com/enochchu/stupidfunpictures/master/gif/rambo/rambomode.jpg","rambo"));
+
+				groups.append(createListItemImage("https://raw.githubusercontent.com/enochchu/stupidfunpictures/master/gif/disappear/danger5window.gif","makeitrain"));
+			}
 		</script>
 	</head>
 	<body>
@@ -82,5 +131,16 @@
 				<h4>Footer</h4>
 			</div>
 		</div>
+
+		<style>
+		.ui-listview .ui-li-icon {
+			text-align: center;
+		}
+
+		.ui-listview .header-title-icon {
+			display: none;
+		}
+
+		</style>
 	</body>
 </html>
