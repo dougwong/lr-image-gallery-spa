@@ -2,61 +2,40 @@
 
 <html>
 	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name='viewport' content='width=device-width, initial-scale=1' />
 
-		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
-		<link href="lib/swipebox.min.css" rel="stylesheet" />
+		<link rel='stylesheet' href='http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css' />
+		<link href='lib/swipebox.min.css' rel='stylesheet' />
 
-		<script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
-		<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-		<script src="lib/jquery.swipebox.min.js"></script>
+		<script src='http://code.jquery.com/jquery-2.2.4.min.js'></script>
+		<script src='http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js'></script>
+		<script src='lib/jquery.swipebox.min.js'></script>
 
 		<script>
 			var server = 'http://localhost:8080';
 			var user = 'test@liferay.com';
 			var password = 'test';
 
-			function createGroupListItemFolder(field) {
-				var listItem = _createGroupList(field.nameCurrentValue, field.friendlyURL, 'aside');
+			var groupId = 0;
+			var folderId = 0;
 
-				return listItem;
-			}
-
-			function createListItemImage(link, title) {
-				var anchorImage = $(document.createElement('a'));
-
-				anchorImage.addClass('swipebox');
-				anchorImage.attr('href', link);
-				anchorImage.attr('title', title);
-
-				var image = $(document.createElement('img'));
-				image.attr('src', link);
-				image.attr('alt', 'image');
-
-				anchorImage.append(image);
-
-				var listItem = _createGroupListItem(title, anchorImage, 'icon');
-
-				return listItem;
-			}
-
-			function _createGroupListItem(headerTitle, content, listType) {
+			function createGroupListItem(field) {
 				var listItem = $(document.createElement('li'));
 				var anchor = $(document.createElement('a'));
 
-				anchor.attr('href', '#');
+				anchor.addClass('groupAnchor');
+				anchor.attr('data-groupId', field.groupId);
 
 				var header = $(document.createElement('h2'));
 
-				header.addClass("header-title-" + listType);
-				header.html(headerTitle);
+				header.html(field.nameCurrentValue);
 
 				anchor.append(header);
 
 				var aside = $(document.createElement('p'));
 
-				aside.addClass("ui-li-" + listType);
-				aside.html(content);
+				aside.addClass('ui-li-aside');
+				aside.html(field.friendlyURL);
 
 				anchor.append(aside);
 
@@ -65,23 +44,88 @@
 				return listItem;
 			}
 
+			function createSubfolderListItem(field) {
+				var listItem = $(document.createElement('li'));
+				var anchor = $(document.createElement('a'));
+
+				anchor.addClass('subfolderAnchor');
+				anchor.attr('data-folderId', field.dlFolderId);
+
+				var header = $(document.createElement('h2'));
+
+				header.html(field.name);
+
+				anchor.append(header);
+
+				var aside = $(document.createElement('p'));
+
+				aside.addClass('ui-li-aside');
+				aside.html(field.folderId);
+
+				anchor.append(aside);
+
+				listItem.append(anchor);
+
+				return listItem;
+			}
+
+			function displayGalleryPage() {
+				$.get(
+					{
+						type: 'GET',
+						url: server + '/api/jsonws/dlapp/get-folders',
+						beforeSend: function (xhr) {
+							xhr.setRequestHeader('Authorization', 'Basic ' + btoa(user + ':' + password));
+						}
+					},
+					{
+						repositoryId: groupId,
+						parentFolderId: folderId
+					},
+					function(data, status) {
+						var subfolders = $('#subfolders');
+
+						$.each(
+							data,
+							function(i, field) {
+								subfolders.append(createSubfolderListItem(field));
+							}
+						);
+
+						subfolders.listview('refresh');
+					}
+				);
+
+				$('body').pagecontainer('change', '#gallery-page');
+			}
+
 			$(document).ready(
 				function() {
+					$('#groups').on(
+						'click',
+						'.groupAnchor',
+						function(event) {
+							groupId = $(event.currentTarget).attr('data-groupId');
+
+							displayGalleryPage();
+						}
+					);
+
 					$.get(
 						{
-							type: "GET",
+							type: 'GET',
 							url: server + '/api/jsonws/group/get-user-sites-groups',
 							beforeSend: function (xhr){
-								xhr.setRequestHeader('Authorization', 'Basic ' + btoa(user + ":" + password));
+								xhr.setRequestHeader('Authorization', 'Basic ' + btoa(user + ':' + password));
 							}
 						},
 						function(data, status) {
 							var groups = $('#groups');
+
 							$.each(
 								data,
 								function(i, field) {
 									groups.append(createGroupListItem(field));
-									console.log(field);
 								}
 							);
 
@@ -104,43 +148,37 @@
 					});
 				}
 			);
-
-			function test() {
-				var groups = $('#groups');
-
-				groups.append(createListItemImage("https://github.com/enochchu/stupidfunpictures/raw/master/gif/makeitrain/monopoly.gif","makeitrain"));
-
-				groups.append(createListItemImage("https://raw.githubusercontent.com/enochchu/stupidfunpictures/master/gif/rambo/rambomode.jpg","rambo"));
-
-				groups.append(createListItemImage("https://raw.githubusercontent.com/enochchu/stupidfunpictures/master/gif/disappear/danger5window.gif","makeitrain"));
-			}
 		</script>
 	</head>
 	<body>
-		<div data-role="page">
-			<div data-role="header">
+		<div data-role='page' id='groups-page'>
+			<div data-role='header'>
 				<h1>LR Image Gallery</h1>
 			</div>
 
-			<div role="main" class="ui-content">
-				<ul data-inset="true" data-role="listview" id="groups">
+			<div role='main' class='ui-content'>
+				<ul data-inset='true' data-role='listview' id='groups'>
 				</ul>
 			</div>
 
-			<div data-role="footer">
+			<div data-role='footer'>
 				<h4>Footer</h4>
 			</div>
 		</div>
 
-		<style>
-		.ui-listview .ui-li-icon {
-			text-align: center;
-		}
+		<div data-role='page' id='gallery-page'>
+			<div data-role='header'>
+				<h1>Gallery Page</h1>
+			</div>
 
-		.ui-listview .header-title-icon {
-			display: none;
-		}
+			<div role='main' class='ui-content'>
+				<ul data-inset='true' data-role='listview' id='subfolders'>
+				</ul>
+			</div>
 
-		</style>
+			<div data-role='footer'>
+				<h4>Footer</h4>
+			</div>
+		</div>
 	</body>
 </html>
