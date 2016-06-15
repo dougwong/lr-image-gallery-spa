@@ -2,6 +2,35 @@
 
 <html>
 	<head>
+		<script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+
+		<script>
+			var server = 'http://localhost:8080';
+			var user = 'test@liferay.com';
+			var password = 'test';
+
+			$(document).ready(
+				function() {
+					$.get(
+						{
+							type: "GET",
+							url: server + '/api/jsonws/group/get-user-sites-groups',
+							beforeSend: function (xhr){
+								xhr.setRequestHeader('Authorization', 'Basic ' + btoa(user + ":" + password));
+							}
+						},
+						function(data, status) {
+							$.each(
+								data,
+								function(i, field) {
+									console.log(field);
+								}
+							);
+						}
+					);
+				}
+			);
+		</script>
 	</head>
 	<body>
 	</body>
