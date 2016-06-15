@@ -16,7 +16,13 @@
 			var user = 'test@liferay.com';
 			var password = 'test';
 
-			function createGroupListItem(field) {
+			function createGroupListItemFolder(field) {
+				var listItem = _createGroupList(field.nameCurrentValue, field.friendlyURL);
+
+				return listItem;
+			}
+
+			function _createGroupListItem(headerTitle, content) {
 				var listItem = $(document.createElement('li'));
 				var anchor = $(document.createElement('a'));
 
@@ -24,14 +30,14 @@
 
 				var header = $(document.createElement('h2'));
 
-				header.html(field.nameCurrentValue);
+				header.html(headerTitle);
 
 				anchor.append(header);
 
 				var aside = $(document.createElement('p'));
 
 				aside.addClass('ui-li-aside');
-				aside.html(field.friendlyURL);
+				aside.html(content);
 
 				anchor.append(aside);
 
